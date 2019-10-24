@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "outDir": "particles/dist",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es7",
+      "dom"
+    ],
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "downlevelIteration": true,
+    "allowUnusedLabels": false,
+  },
+  "include": [
+    "particles"
+  ],
+  "exclude": [
+    "node_modules",
+    "example"
+  ]
+}

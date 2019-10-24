@@ -1,0 +1,25 @@
+{
+  "name": "particles",
+  "version": "1.0.0",
+  "description": "An 2d extensible particle system",
+  "main": "/dist/index.js",
+  "scripts": {
+    "start": "./node_modules/http-server/bin/http-server -c-1",
+    "build": "./node_modules/typescript/bin/tsc -build tsconfig.json && ./node_modules/browserify/bin/cmd.js ./particles/dist/index.js -o ./particles/dist/bundle.js",
+    "serve": "./node_modules/.bin/nodemon --watch ./example --watch ./particles --exec 'npm run build && npm start'"
+  },
+  "author": "Nick Winner",
+  "license": "MIT",
+  "dependencies": {
+    "browserify": "^16.5.0",
+    "typescript": "^3.6.4"
+  },
+  "devDependencies": {
+    "http-server": "^0.11.1",
+    "nodemon": "^1.19.4"
+  },
+  "nodemonConfig": {
+    "ext": "ts,js,html",
+    "ignore": ["dist/*"]
+  }
+}
