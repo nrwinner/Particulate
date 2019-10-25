@@ -4,7 +4,11 @@
     <script type="text/javascript" src="../particles/dist/bundle.js"></script>
     <script type="text/javascript" src="./index.js"></script>
   </head>
-  <body style="margin: 0; padding: 0;">
+  <body onload="onload()" style="margin: 0; padding: 0;">
     <canvas id="particles" width="600" height="600"></canvas>
+    <button onclick="play()">Play</button>
+    <button onclick="pause()">Pause</button>
+    <button onclick="activateRain()">Rain</button>
+    <button onclick="activateSnow()">Snow</button>
   </body>
 </html>
