@@ -22,7 +22,7 @@ const skyBoxEmitter = {
   y: 0,
   width: 600,
   height: 0,
-  emissionFrequency: 100,
+  emitPerTick: 2,
 }
 
 function onload() {
@@ -58,7 +58,7 @@ function activateRain() {
 
   canvas.style.backgroundColor = 'black';
 
-  const config = {
+  let config = {
     particle: rainParticle,
     emitter: skyBoxEmitter
   }

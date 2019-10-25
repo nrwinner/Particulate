@@ -1,4 +1,4 @@
-import { Emitter } from "../Emitter";
+import { Emitter } from "./Emitter";
 
 /**
  * The ParticleSystem class defines the position of the emitter on the canvas as well as it's dimensions
@@ -13,7 +13,7 @@ export class ParticleSystem {
   private particles: Particle[] = [];
 
   constructor(
-    private emitter: Emitter<Particle>,
+    private emitter: Emitter,
     private context: CanvasRenderingContext2D,
     private canvasWidth: number,
     private canvasHeight: number
@@ -69,7 +69,9 @@ export class ParticleSystem {
 
       this.context.restore();
 
-      requestAnimationFrame(this.tick.bind(this));
+      if (this.particles.length) {
+        requestAnimationFrame(this.tick.bind(this));
+      }
     }
   };
 
@@ -93,6 +95,9 @@ export class Particle {
   speed: number;
   color: string;
   shape: string;
+  timeToLive: number;
+
+  spawnTime: number;
 
   constructor(public position: { x: number, y: number }, private config: ParticleConfig) {
     this.size = typeof this.config.size  === 'function' ? this.config.size() : this.config.size;
@@ -100,10 +105,17 @@ export class Particle {
     this.speed = typeof this.config.speed  === 'function' ? this.config.speed() : this.config.speed;
     this.color = typeof this.config.color  === 'function' ? this.config.color() : this.config.color;
     this.shape = typeof this.config.shape  === 'function' ? this.config.shape() : this.config.shape;
+    this.timeToLive = typeof this.config.timeToLive  === 'function' ? this.config.timeToLive() : this.config.timeToLive;
+
+    this.spawnTime = Date.now();
   }
 
   tick(): void {
     this.calculateMove();
+
+    if (this.timeToLive && Date.now() - this.spawnTime > this.timeToLive) {
+      this.dead = true;
+    }
   };
 
   generateCanvasElement(ctx: CanvasRenderingContext2D): void {
@@ -137,4 +149,5 @@ export interface ParticleConfig {
   vector: number | (() => number);
   color: string | (() => string);
   shape: Shape | (() => Shape);
+  timeToLive?: number | (() => number);
 }

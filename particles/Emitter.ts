@@ -1,4 +1,4 @@
-import { Particle, ParticleConfig } from "./systems/ParticleSystem";
+import { Particle, ParticleConfig } from "./ParticleSystem";
 
 export interface EmitterConfig {
   x: number;
@@ -6,12 +6,15 @@ export interface EmitterConfig {
   width: number;
   height: number;
   emitPerTick?: number;
+  numberOfEmissions?: number;
   emissionFrequency?: number;
   maxLivingParticles?: number;
 }
 
-export class Emitter<T extends Particle> {
+export class Emitter {
+  dead: boolean;
   private emissionThreshold: number;
+  private ticksSinceLastEmission = 0;
   private emissionCounter = 0;
 
   constructor(private particleConfig: ParticleConfig, private emitterConfig: EmitterConfig) {
@@ -19,34 +22,57 @@ export class Emitter<T extends Particle> {
   }
 
   emit(currentParticleCount?: number): Particle[] {
-    if (this.shouldEmit(currentParticleCount)) {
-      let pos = {
-        x: random(this.emitterConfig.x, this.emitterConfig.x + this.emitterConfig.width),
-        y: random(this.emitterConfig.y, this.emitterConfig.y + this.emitterConfig.height),
-      }
-      const p = new Particle(
-       pos,
-       this.particleConfig
-      );
+    if (this.shouldEmit(currentParticleCount) && !this.dead) {
+      const particles: Particle[] = [];
 
-      return [ p ];
+      for (let i = 0; i < this.calculateEmissionCount(); i++) {
+        const p = new Particle(
+          {
+            x: random(this.emitterConfig.x, this.emitterConfig.x + this.emitterConfig.width),
+            y: random(this.emitterConfig.y, this.emitterConfig.y + this.emitterConfig.height),
+          },
+          this.particleConfig
+        )
+        particles.push(p);
+      }
+
+      if (this.emitterConfig.numberOfEmissions && ++this.emissionCounter >= this.emitterConfig.numberOfEmissions) {
+        this.dead = true;
+      }
+
+      return particles;
     }
-    
+
     return null;
   }
 
   shouldEmit(currentParticleCount?: number): boolean {
-    this.emissionCounter++;
+    this.ticksSinceLastEmission += this.emitterConfig.emitPerTick || 1;
 
     if (
-      this.emissionCounter > this.emissionThreshold &&
+      this.ticksSinceLastEmission >= this.emissionThreshold &&
       (!this.emitterConfig.maxLivingParticles || !currentParticleCount || currentParticleCount < this.emitterConfig.maxLivingParticles)
     ) {
-      this.emissionCounter = 0;
+      this.ticksSinceLastEmission = 0;
       return true;
     }
 
+
     return false;
+  }
+
+  calculateEmissionCount() {
+    let count = 1;
+
+    if (this.emitterConfig.emitPerTick) {
+      count = this.emitterConfig.emitPerTick;
+    }
+
+    if (this.emitterConfig.maxLivingParticles) {
+      count = Math.min(count, this.emitterConfig.maxLivingParticles)
+    }
+
+    return count;
   }
 }
 
