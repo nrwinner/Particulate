@@ -1,5 +1,6 @@
 import { Emitter, EmitterConfig } from "./Emitter";
-import { Particle, ParticleSystem, ParticleConfig, Shape } from "./ParticleSystem";
+import { ParticleSystem, ParticleConfig, Shape } from "./ParticleSystem";
+import { ParticleScene } from './Scene';
 
 interface ParticleSystemConfig {
   particle: ParticleConfig;
@@ -26,7 +27,11 @@ const defaultParticlesConfig: ParticleSystemConfig = {
   }
 }
 
-window['Particles'] = (canvas: HTMLCanvasElement, config: ParticleSystemConfig = defaultParticlesConfig) => {
+const CreateParticleScene = (canvas: HTMLCanvasElement, ...systems: ParticleSystem[]): ParticleScene => {
+  return new ParticleScene(canvas, systems);
+}
+
+const CreateParticleSystem = (canvas: HTMLCanvasElement, config: ParticleSystemConfig = defaultParticlesConfig) => {
   const context = canvas.getContext('2d');
   const { width, height } = canvas.getBoundingClientRect();
 
@@ -37,6 +42,9 @@ window['Particles'] = (canvas: HTMLCanvasElement, config: ParticleSystemConfig =
 
   return system;
 }
+
+window['CreateParticleSystem'] = CreateParticleSystem;
+window['CreateParticleScene'] = CreateParticleScene;
 
 function random(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;

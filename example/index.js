@@ -44,9 +44,12 @@ function activateDefault() {
     system.stop();
   }
 
-  canvas.style.backgroundColor = 'white';
+  canvas.style.backgroundColor = 'black';
 
-  system = Particles(canvas);
+  const turret = CreateParticleSystem(canvas);
+  const gunner = CreateParticleSystem(canvas, { particle: snowParticle, emitter: skyBoxEmitter });
+
+  system = CreateParticleScene(canvas, turret, gunner);
 
   system.start();
 }
@@ -63,7 +66,7 @@ function activateRain() {
     emitter: skyBoxEmitter
   }
 
-  system = Particles(canvas, config);
+  system = CreateParticleSystem(canvas, config);
 
   system.start();
 }
@@ -80,7 +83,7 @@ function activateSnow() {
     emitter: skyBoxEmitter
   }
 
-  system = Particles(canvas, config);
+  system = CreateParticleSystem(canvas, config);
 
   system.start();
 }

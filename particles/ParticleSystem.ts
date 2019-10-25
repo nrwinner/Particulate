@@ -8,6 +8,7 @@ import { Emitter } from "./Emitter";
  * @class ParticleSystem
  */
 export class ParticleSystem {
+  deferTick: boolean;
   private running: boolean;
 
   private particles: Particle[] = [];
@@ -16,13 +17,16 @@ export class ParticleSystem {
     private emitter: Emitter,
     private context: CanvasRenderingContext2D,
     private canvasWidth: number,
-    private canvasHeight: number
+    private canvasHeight: number,
   ) { }
 
   start() {
     if (!this.running) {      
       this.running = true;
-      requestAnimationFrame(this.tick.bind(this));
+
+      if (!this.deferTick) {
+        requestAnimationFrame(this.tick.bind(this));
+      }
     }
   }
 
@@ -36,7 +40,10 @@ export class ParticleSystem {
 
   tick(): void {
     if (this.status) {
-      this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+      if (!this.deferTick) {
+        this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      }
 
       this.context.save();
 
@@ -69,7 +76,7 @@ export class ParticleSystem {
 
       this.context.restore();
 
-      if (this.particles.length) {
+      if (this.running && this.particles.length && !this.deferTick) {
         requestAnimationFrame(this.tick.bind(this));
       }
     }
