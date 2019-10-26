@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link href="./styles.css" rel="stylesheet" />
     <script type="text/javascript" src="../particles/dist/bundle.js"></script>
     <script type="text/javascript" src="./index.js"></script>
   </head>
   <body onload="onload()" style="margin: 0; padding: 0;">
-    <canvas id="particles" width="600" height="600"></canvas>
-    <button onclick="play()">Play</button>
-    <button onclick="pause()">Pause</button>
-    <button onclick="activateDefault()">Default</button>
-    <button onclick="activateRain()">Rain</button>
-    <button onclick="activateSnow()">Snow</button>
-    <button onclick="activateCanvasClick()">On-Click Particle Burst</button>
+    <div class="app">
+      <div onmouseenter="toggleControls()" onmouseleave="toggleControls()" class="canvas">
+        <canvas id="particles" width="600" height="600"></canvas>
+        <div class="controls">
+          <button class="controls__button" onclick="play()">Play</button>
+          <button class="controls__button" onclick="pause()">Pause</button>
+        </div>
+      </div>
+      <div class="particle-switcher">
+        <div class="particle-switcher__highlight"></div>
+        <button class="particle-switcher__button particle-switcher__button--active" onclick="activateDefault(); toggleParticleSystem(event);">Default</button>
+        <button class="particle-switcher__button" onclick="activateRain(); toggleParticleSystem(event);">Rain</button>
+        <button class="particle-switcher__button" onclick="activateSnow(); toggleParticleSystem(event);">Snow</button>
+        <button class="particle-switcher__button" onclick="activateCanvasClick(); toggleParticleSystem(event);">Particle Burst</button>
+      </div>
+    </div>
   </body>
 </html>

@@ -19,7 +19,7 @@
     "nodemon": "^1.19.4"
   },
   "nodemonConfig": {
-    "ext": "ts,js,html",
+    "ext": "ts,js,html,css",
     "ignore": ["dist/*"]
   }
 }

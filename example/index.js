@@ -1,6 +1,22 @@
 let canvas;
 let scene;
 
+function toggleControls() {
+  const el = document.getElementsByClassName('controls')[0];
+  if (!el.classList.contains('controls--visible')) {
+    el.classList.add('controls--visible');
+  } else {
+    el.classList.remove('controls--visible');
+  }
+}
+
+function toggleParticleSystem(event) {
+  document.getElementsByClassName('particle-switcher__button--active')[0].classList.remove('particle-switcher__button--active');
+  event.srcElement.classList.add('particle-switcher__button--active');
+  const highlightElement = document.getElementsByClassName('particle-switcher__highlight')[0];
+  highlightElement.style = `transform: translateX(${event.srcElement.offsetLeft}px); width: ${event.srcElement.offsetWidth}px`
+}
+
 const skyBoxEmitter = {
   x: 0,
   y: 0,
@@ -116,12 +132,12 @@ function activateCanvasClick() {
   canvas.addEventListener('click', canvasClickHandler);
 }
 
-function canvasClickHandler() {
+function canvasClickHandler(event) {
 
   const burstConfig = {
     emitter: {  
-      x: event.pageX,
-      y: event.pageY,
+      x: event.pageX - event.currentTarget.getBoundingClientRect().left,
+      y: event.pageY - event.currentTarget.getBoundingClientRect().top,
       width: 0,
       height: 0,
       numberOfEmissions: 1,
