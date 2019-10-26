@@ -145,7 +145,7 @@ export class Particle {
     ctx.fill();
   };
 
-  private calculateLinearMove() {
+  calculateLinearMove() {
     this.position.x += Math.sin(this.vector * (Math.PI / 180)) * this.speed;
     this.position.y += Math.cos(this.vector * (Math.PI / 180)) * this.speed;
   }

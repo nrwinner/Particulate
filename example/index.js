@@ -1,26 +1,10 @@
 let canvas;
 let scene;
 
-const rainParticle = {
-  size: { w: 1, h: 5 },
-  speed: () =>  Math.floor(Math.random() * 18) + 10,
-  vector: 0,
-  color: 'white',
-  shape: 'line'
-}
-
-const snowParticle = {
-  size: () => { return { w: random(1, 2) } },
-  speed: () =>  random(2, 4),
-  vector: 0,
-  color: 'white',
-  shape: 'circle'
-}
-
 const skyBoxEmitter = {
   x: 0,
   y: 0,
-  width: 600,
+  width: 900,
   height: 0,
   emitPerTick: 2,
 }
@@ -43,6 +27,8 @@ function play() {
   }
 }
 
+
+
 function activateDefault() {
   if (scene) {
     scene.stop();
@@ -56,7 +42,17 @@ function activateDefault() {
   scene.start();
 }
 
+
+
 function activateRain() {
+
+  const rainParticle = {
+    size: { w: 1, h: 5 },
+    speed: () =>  Math.floor(Math.random() * 18) + 10,
+    vector: 0,
+    color: 'white',
+    shape: 'line'
+  }
 
   if (scene) {
     scene.stop();
@@ -75,7 +71,17 @@ function activateRain() {
   scene.start();
 }
 
+
+
 function activateSnow() {
+  const snowParticle = {
+    size: () => { return { w: random(1, 2) } },
+    speed: () =>  random(2, 4),
+    vector: 0,
+    color: 'white',
+    shape: 'circle',
+  }
+
   if (scene) {
     scene.stop();
     canvas.removeEventListener('click', canvasClickHandler);
@@ -92,6 +98,8 @@ function activateSnow() {
   scene.addSystem(CreateParticleSystem(canvas, config));
   scene.start();
 }
+
+
 
 function activateCanvasClick() {
   if (scene) {
@@ -110,7 +118,7 @@ function activateCanvasClick() {
 
 function canvasClickHandler() {
 
-  const clickConfig = {
+  const burstConfig = {
     emitter: {  
       x: event.pageX,
       y: event.pageY,
@@ -130,15 +138,13 @@ function canvasClickHandler() {
           let [r, g, b, a] = p.color.match(/[0-9]*/g).map(x => parseInt(x)).filter(x => !Number.isNaN(x));
 
           p.animationState = { r, g, b, a };
-          p.animationState.speed = p.speed;
           p.animationState.vector = p.vector;
+          p.animationState.direction = [-1, 1][random(0, 1)];
         } else {
           p.animationState.a -= 0.02;
-          p.animationState.speed -= 0.2;
-          p.animationState.vector = p.animationState.vector + 5;
+          p.animationState.vector = p.animationState.vector + (5 * p.animationState.direction);
 
           p.color = `rgba(${p.animationState.r}, ${p.animationState.g}, ${p.animationState.b}, ${p.animationState.a})`
-          // p.speed = p.animationState.speed;
           p.vector = p.animationState.vector;
         }
 
@@ -151,7 +157,7 @@ function canvasClickHandler() {
     }
   }
   
-  scene.addSystem(CreateParticleSystem(canvas, clickConfig)); 
+  scene.addSystem(CreateParticleSystem(canvas, burstConfig)); 
 }
 
 function random(min, max) {
