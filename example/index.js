@@ -123,8 +123,31 @@ function canvasClickHandler() {
       size: () => ({ w: random(2, 5) }),
       speed: () => random(5, 10),
       vector: () => random(0, 360),
-      color: () => `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`,
+      color: () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 1)`,
       shape: 'circle',
+      animation: (p) => {
+        if (!p.animationState) {
+          let [r, g, b, a] = p.color.match(/[0-9]*/g).map(x => parseInt(x)).filter(x => !Number.isNaN(x));
+
+          p.animationState = { r, g, b, a };
+          p.animationState.speed = p.speed;
+          p.animationState.vector = p.vector;
+        } else {
+          p.animationState.a -= 0.02;
+          p.animationState.speed -= 0.2;
+          p.animationState.vector = p.animationState.vector + 5;
+
+          p.color = `rgba(${p.animationState.r}, ${p.animationState.g}, ${p.animationState.b}, ${p.animationState.a})`
+          // p.speed = p.animationState.speed;
+          p.vector = p.animationState.vector;
+        }
+
+        if (p.animationState.a <= 0) {
+          p.dead = true;
+        }
+
+        p.calculateLinearMove();
+      }
     }
   }
   

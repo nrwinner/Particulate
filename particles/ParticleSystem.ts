@@ -99,6 +99,11 @@ export class Particle {
   shape: string;
   timeToLive: number;
 
+  tickCount: number;
+
+  // if an animation function is passed in, this is used to store state for it. Can be anything
+  animationState: any;
+
   spawnTime: number;
 
   constructor(public position: { x: number, y: number }, private config: ParticleConfig) {
@@ -113,7 +118,13 @@ export class Particle {
   }
 
   tick(): void {
-    this.calculateMove();
+    if (this.config.animation) {
+      this.config.animation(this)
+    } else {
+      this.calculateLinearMove();
+    }
+
+    this.tickCount++;
 
     if (this.timeToLive && Date.now() - this.spawnTime > this.timeToLive) {
       this.dead = true;
@@ -134,7 +145,7 @@ export class Particle {
     ctx.fill();
   };
 
-  private calculateMove() {
+  private calculateLinearMove() {
     this.position.x += Math.sin(this.vector * (Math.PI / 180)) * this.speed;
     this.position.y += Math.cos(this.vector * (Math.PI / 180)) * this.speed;
   }
@@ -151,5 +162,6 @@ export interface ParticleConfig {
   vector: number | (() => number);
   color: string | (() => string);
   shape: Shape | (() => Shape);
+  animation?: (x: Particle) => void;
   timeToLive?: number | (() => number);
 }
