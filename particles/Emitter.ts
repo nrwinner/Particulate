@@ -5,7 +5,7 @@ export interface EmitterConfig {
   y: number;
   width: number;
   height: number;
-  emitPerTick?: number;
+  emitPerTick?: number | (() => number);
   numberOfEmissions?: number;
   emissionFrequency?: number;
   maxLivingParticles?: number;
@@ -13,12 +13,16 @@ export interface EmitterConfig {
 
 export class Emitter {
   dead: boolean;
+
+  private emitPerTick: number;
   private emissionThreshold: number;
   private ticksSinceLastEmission = 0;
   private emissionCounter = 0;
 
   constructor(private particleConfig: ParticleConfig, private emitterConfig: EmitterConfig) {
     this.emissionThreshold = 100 / (this.emitterConfig.emissionFrequency ? this.emitterConfig.emissionFrequency : 100);
+
+    this.emitPerTick = (typeof emitterConfig.emitPerTick === 'function') ? emitterConfig.emitPerTick() : emitterConfig.emitPerTick;
   }
 
   emit(currentParticleCount?: number): Particle[] {
@@ -47,7 +51,7 @@ export class Emitter {
   }
 
   shouldEmit(currentParticleCount?: number): boolean {
-    this.ticksSinceLastEmission += this.emitterConfig.emitPerTick || 1;
+    this.ticksSinceLastEmission += this.emitPerTick || 1;
 
     if (
       this.ticksSinceLastEmission >= this.emissionThreshold &&
@@ -64,8 +68,8 @@ export class Emitter {
   calculateEmissionCount() {
     let count = 1;
 
-    if (this.emitterConfig.emitPerTick) {
-      count = this.emitterConfig.emitPerTick;
+    if (this.emitPerTick) {
+      count = this.emitPerTick;
     }
 
     if (this.emitterConfig.maxLivingParticles) {

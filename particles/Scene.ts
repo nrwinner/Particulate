@@ -6,7 +6,12 @@ export class ParticleScene {
 
   constructor(private canvas: HTMLCanvasElement, private systems: ParticleSystem[]) {
     this.context = this.canvas.getContext('2d');
-    systems.map(system => system.deferTick = true);
+
+    if (systems) {
+      for (let system of systems) {
+        this.addSystem(system);
+      }
+    }
   }
 
   start() {
@@ -21,6 +26,14 @@ export class ParticleScene {
     }
   }
 
+  addSystem(s: ParticleSystem) {
+    this.systems.push(s);
+
+    if (this.running) {
+      s.start();
+    }
+  }
+
   stop() {
     this.running = false;
 
@@ -32,7 +45,20 @@ export class ParticleScene {
   tick() {
     if (this.running) {
       this.context.clearRect(0, 0, this.canvas.getBoundingClientRect().width, this.canvas.getBoundingClientRect().height);
-      this.systems.map(system => system.tick());
+
+      const livingSystems: ParticleSystem[] = [];
+
+      for (let system of this.systems) {
+        if (!system.dead && system.status) {
+          system.tick();
+          livingSystems.push(system);
+        } else {
+          system.stop();
+        }
+      }
+
+      this.systems = livingSystems;
+
       requestAnimationFrame(this.tick.bind(this))
     }
   }

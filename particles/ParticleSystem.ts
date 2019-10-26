@@ -8,7 +8,7 @@ import { Emitter } from "./Emitter";
  * @class ParticleSystem
  */
 export class ParticleSystem {
-  deferTick: boolean;
+  dead: boolean;
   private running: boolean;
 
   private particles: Particle[] = [];
@@ -23,10 +23,6 @@ export class ParticleSystem {
   start() {
     if (!this.running) {      
       this.running = true;
-
-      if (!this.deferTick) {
-        requestAnimationFrame(this.tick.bind(this));
-      }
     }
   }
 
@@ -39,11 +35,7 @@ export class ParticleSystem {
   }
 
   tick(): void {
-    if (this.status) {
-
-      if (!this.deferTick) {
-        this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-      }
+    if (this.status && !this.dead) {
 
       this.context.save();
 
@@ -55,7 +47,10 @@ export class ParticleSystem {
         
         p.tick();
 
-        if (Math.abs(p.position.y) >= 600 || Math.abs(p.position.x) >= 600) {
+        if (
+          p.position.y >= this.canvasHeight || p.position.y <= 0
+          || p.position.x >= this.canvasWidth || p.position.x <= 0
+        ) {
           p.dead = true;
         }
 
@@ -75,9 +70,9 @@ export class ParticleSystem {
       this.particles = livingParticles;
 
       this.context.restore();
-
-      if (this.running && this.particles.length && !this.deferTick) {
-        requestAnimationFrame(this.tick.bind(this));
+      
+      if (!this.particles.length && this.emitter.dead) {
+        this.dead = true;
       }
     }
   };

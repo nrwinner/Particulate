@@ -1,5 +1,5 @@
 let canvas;
-let system;
+let scene;
 
 const rainParticle = {
   size: { w: 1, h: 5 },
@@ -32,31 +32,35 @@ function onload() {
 }
 
 function pause() {
-  system.stop() 
+  if (scene) {
+    scene.stop();
+  }
 }
 
 function play() {
-  system.start();
+  if (scene) {
+    scene.start();
+  }
 }
 
 function activateDefault() {
-  if (system) {
-    system.stop();
+  if (scene) {
+    scene.stop();
+    canvas.removeEventListener('click', canvasClickHandler);
   }
 
-  canvas.style.backgroundColor = 'black';
+  canvas.style.backgroundColor = 'white';
 
-  const turret = CreateParticleSystem(canvas);
-  const gunner = CreateParticleSystem(canvas, { particle: snowParticle, emitter: skyBoxEmitter });
-
-  system = CreateParticleScene(canvas, turret, gunner);
-
-  system.start();
+  scene = CreateParticleScene(canvas); 
+  scene.addSystem(CreateParticleSystem(canvas));
+  scene.start();
 }
 
 function activateRain() {
-  if (system) {
-    system.stop();
+
+  if (scene) {
+    scene.stop();
+    canvas.removeEventListener('click', canvasClickHandler);
   }
 
   canvas.style.backgroundColor = 'black';
@@ -66,14 +70,15 @@ function activateRain() {
     emitter: skyBoxEmitter
   }
 
-  system = CreateParticleSystem(canvas, config);
-
-  system.start();
+  scene = CreateParticleScene(canvas); 
+  scene.addSystem(CreateParticleSystem(canvas, config));
+  scene.start();
 }
 
 function activateSnow() {
-  if (system) {
-    system.stop();
+  if (scene) {
+    scene.stop();
+    canvas.removeEventListener('click', canvasClickHandler);
   }
 
   canvas.style.backgroundColor = 'black';
@@ -83,9 +88,47 @@ function activateSnow() {
     emitter: skyBoxEmitter
   }
 
-  system = CreateParticleSystem(canvas, config);
+  scene = CreateParticleScene(canvas); 
+  scene.addSystem(CreateParticleSystem(canvas, config));
+  scene.start();
+}
 
-  system.start();
+function activateCanvasClick() {
+  if (scene) {
+    scene.stop();
+    canvas.removeEventListener('click', canvasClickHandler);
+  }
+  
+  canvas.style.backgroundColor = 'white';
+
+  scene = CreateParticleScene(canvas);
+  scene.start();
+  
+  
+  canvas.addEventListener('click', canvasClickHandler);
+}
+
+function canvasClickHandler() {
+
+  const clickConfig = {
+    emitter: {  
+      x: event.pageX,
+      y: event.pageY,
+      width: 0,
+      height: 0,
+      numberOfEmissions: 1,
+      emitPerTick: () => random(6, 20)
+    },
+    particle: {
+      size: () => ({ w: random(2, 5) }),
+      speed: () => random(5, 10),
+      vector: () => random(0, 360),
+      color: () => `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`,
+      shape: 'circle',
+    }
+  }
+  
+  scene.addSystem(CreateParticleSystem(canvas, clickConfig)); 
 }
 
 function random(min, max) {

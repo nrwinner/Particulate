@@ -38,8 +38,6 @@ const CreateParticleSystem = (canvas: HTMLCanvasElement, config: ParticleSystemC
   const emitter = new Emitter(config.particle, config.emitter);
   const system = new ParticleSystem(emitter, context, width, height);
 
-  system.start();
-
   return system;
 }
 
