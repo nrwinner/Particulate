@@ -13,8 +13,9 @@ function toggleControls() {
 function toggleParticleSystem(event) {
   document.getElementsByClassName('particle-switcher__button--active')[0].classList.remove('particle-switcher__button--active');
   event.srcElement.classList.add('particle-switcher__button--active');
+
   const highlightElement = document.getElementsByClassName('particle-switcher__highlight')[0];
-  highlightElement.style = `transform: translateX(${event.srcElement.offsetLeft}px); width: ${event.srcElement.offsetWidth}px`
+  highlightElement.style = `transform: translateX(${event.srcElement.offsetLeft}px)`
 }
 
 const skyBoxEmitter = {
@@ -27,6 +28,9 @@ const skyBoxEmitter = {
 
 function onload() {
   canvas = document.getElementById('particles');
+
+  const highlightTab = document.getElementsByClassName('particle-switcher__button--active')[0];
+
 
   activateDefault();
 }

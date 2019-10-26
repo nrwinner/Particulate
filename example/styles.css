@@ -73,6 +73,7 @@ button {
   transition: transform 0.4s ease;
   background: rgb(18, 121, 218);
   border-radius: 6px;
+  width: 150px;
 }
 
 .particle-switcher__button {
