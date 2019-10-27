@@ -1,5 +1,9 @@
 import { Emitter } from "./Emitter";
 
+export interface ParticleSysteOptions {
+  startAtTick?: number;
+}
+
 /**
  * The ParticleSystem class defines the position of the emitter on the canvas as well as it's dimensions
  *
@@ -9,20 +13,35 @@ import { Emitter } from "./Emitter";
  */
 export class ParticleSystem {
   dead: boolean;
-  private running: boolean;
-
+  canvasSize: { w: number, h: number };
+  context: CanvasRenderingContext2D;
+  
+  running: boolean;
   private particles: Particle[] = [];
+
+  private hasStarted: boolean;
 
   constructor(
     private emitter: Emitter,
-    private context: CanvasRenderingContext2D,
-    private canvasWidth: number,
-    private canvasHeight: number,
+    private options?: ParticleSysteOptions
   ) { }
 
   start() {
-    if (!this.running) {      
+    if (!this.running) {
+
+      if (this.options && this.options.startAtTick && !this.hasStarted) {
+        this.running = true;
+  
+        for (let i = 0; i < this.options.startAtTick; i++) {
+          this.tick();
+        }
+  
+        this.running = false;
+      }
+
       this.running = true;
+
+      this.hasStarted = true;
     }
   }
 
@@ -30,12 +49,8 @@ export class ParticleSystem {
     this.running = false;
   }
 
-  get status(): boolean {
-    return this.running;
-  }
-
   tick(): void {
-    if (this.status && !this.dead) {
+    if (this.running && !this.dead) {
 
       this.context.save();
 
@@ -48,8 +63,8 @@ export class ParticleSystem {
         p.tick();
 
         if (
-          p.position.y >= this.canvasHeight || p.position.y <= 0
-          || p.position.x >= this.canvasWidth || p.position.x <= 0
+          p.position.y >= this.canvasSize.h || p.position.y <= 0
+          || p.position.x >= this.canvasSize.w || p.position.x <= 0
         ) {
           p.dead = true;
         }

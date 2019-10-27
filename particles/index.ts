@@ -1,10 +1,11 @@
 import { Emitter, EmitterConfig } from "./Emitter";
-import { ParticleSystem, ParticleConfig, Shape } from "./ParticleSystem";
+import { ParticleSystem, ParticleConfig, Shape, ParticleSysteOptions } from "./ParticleSystem";
 import { ParticleScene } from './Scene';
 
-interface ParticleSystemConfig {
+export interface ParticleSystemConfig {
   particle: ParticleConfig;
   emitter: EmitterConfig;
+  systemOptions?: ParticleSysteOptions;
 }
 
 const defaultParticlesConfig: ParticleSystemConfig = {
@@ -27,20 +28,19 @@ const defaultParticlesConfig: ParticleSystemConfig = {
   }
 }
 
-const CreateParticleScene = (canvas: HTMLCanvasElement, ...systems: ParticleSystem[]): ParticleScene => {
+export const CreateParticleScene = (canvas: HTMLCanvasElement, ...systems: ParticleSystem[]): ParticleScene => {
   return new ParticleScene(canvas, systems);
 }
 
-const CreateParticleSystem = (canvas: HTMLCanvasElement, config: ParticleSystemConfig = defaultParticlesConfig) => {
-  const context = canvas.getContext('2d');
-  const { width, height } = canvas.getBoundingClientRect();
+export const CreateParticleSystem = (config: ParticleSystemConfig = defaultParticlesConfig) => {
 
   const emitter = new Emitter(config.particle, config.emitter);
-  const system = new ParticleSystem(emitter, context, width, height);
+  const system = new ParticleSystem(emitter, config.systemOptions);
 
   return system;
 }
 
+// Add the two above exports to the Window object to be accessed without Typescript
 window['CreateParticleSystem'] = CreateParticleSystem;
 window['CreateParticleScene'] = CreateParticleScene;
 

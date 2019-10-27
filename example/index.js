@@ -21,16 +21,13 @@ function toggleParticleSystem(event) {
 const skyBoxEmitter = {
   x: 0,
   y: 0,
-  width: 900,
+  width: 600,
   height: 0,
-  emitPerTick: 2,
+  emitPerTick: 1,
 }
 
 function onload() {
   canvas = document.getElementById('particles');
-
-  const highlightTab = document.getElementsByClassName('particle-switcher__button--active')[0];
-
 
   activateDefault();
 }
@@ -58,7 +55,7 @@ function activateDefault() {
   canvas.style.backgroundColor = 'white';
 
   scene = CreateParticleScene(canvas); 
-  scene.addSystem(CreateParticleSystem(canvas));
+  scene.addSystem(CreateParticleSystem());
   scene.start();
 }
 
@@ -87,7 +84,7 @@ function activateRain() {
   }
 
   scene = CreateParticleScene(canvas); 
-  scene.addSystem(CreateParticleSystem(canvas, config));
+  scene.addSystem(CreateParticleSystem(config));
   scene.start();
 }
 
@@ -96,8 +93,8 @@ function activateRain() {
 function activateSnow() {
   const snowParticle = {
     size: () => { return { w: random(1, 2) } },
-    speed: () =>  random(2, 4),
-    vector: 0,
+    speed: () =>  random(1, 4),
+    vector: 20,
     color: 'white',
     shape: 'circle',
   }
@@ -111,11 +108,25 @@ function activateSnow() {
 
   const config = {
     particle: snowParticle,
-    emitter: skyBoxEmitter
+    emitter: skyBoxEmitter,
+    systemOptions: { startAtTick: 200 }
+  }
+
+  const skyBoxEmitter2 = Object.assign({}, skyBoxEmitter);
+  skyBoxEmitter2.width = 0;
+  skyBoxEmitter2.height = 600;
+  skyBoxEmitter2.emitPerTick = 1;
+  skyBoxEmitter2.emissionFrequency = 50;
+
+  const config2 = {
+    particle: snowParticle,
+    emitter: skyBoxEmitter2,
+    systemOptions: { startAtTick: 100 }
   }
 
   scene = CreateParticleScene(canvas); 
-  scene.addSystem(CreateParticleSystem(canvas, config));
+  scene.addSystem(CreateParticleSystem(config));
+  scene.addSystem(CreateParticleSystem(config2));
   scene.start();
 }
 
@@ -177,7 +188,7 @@ function canvasClickHandler(event) {
     }
   }
   
-  scene.addSystem(CreateParticleSystem(canvas, burstConfig)); 
+  scene.addSystem(CreateParticleSystem(burstConfig)); 
 }
 
 function random(min, max) {
