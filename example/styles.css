@@ -16,7 +16,7 @@ button {
   border: 2px dashed grey;
   display: inline-block;
   position: relative;
-  width: 600px;
+  width: 900px;
   height: 600px;
 }
 
@@ -57,10 +57,10 @@ button {
 
 .particle-switcher {
   margin-top: 20px;
-  width: 600px;
+  width: 900px;
   position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
   box-shadow: 0 1px 20px 1px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
 }
@@ -73,9 +73,9 @@ button {
   z-index: 0;
   transform: translateX(0px);
   transition: transform 0.4s ease;
-  background: rgb(18, 121, 218);
+  background: linear-gradient(45deg, rgb(9, 101, 187), rgb(6, 128, 243));
   border-radius: 6px;
-  width: 150px;
+  width: 225px;
 }
 
 .particle-switcher__button {

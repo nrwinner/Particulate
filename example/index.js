@@ -18,18 +18,10 @@ function toggleParticleSystem(event) {
   highlightElement.style = `transform: translateX(${event.srcElement.offsetLeft}px)`
 }
 
-const skyBoxEmitter = {
-  x: 0,
-  y: 0,
-  width: 600,
-  height: 0,
-  emitPerTick: 1,
-}
-
 function onload() {
   canvas = document.getElementById('particles');
 
-  activateDefault();
+  activateRain();
 }
 
 function pause() {
@@ -44,13 +36,8 @@ function play() {
   }
 }
 
-
-
-function activateDefault() {
-  if (scene) {
-    scene.stop();
-    canvas.removeEventListener('click', canvasClickHandler);
-  }
+function activateInsects() {
+  cleanUpFromPreviousScene();
 
   const config = {
     emitter: {
@@ -94,9 +81,16 @@ function activateDefault() {
   scene.start();
 }
 
-
-
 function activateRain() {
+  cleanUpFromPreviousScene();
+
+  const skyBoxEmitter = {
+    x: 0,
+    y: 0,
+    width: 900,
+    height: 0,
+    emitPerTick: 5,
+  }
 
   const rainParticle = {
     size: { w: 1, h: 5 },
@@ -106,72 +100,69 @@ function activateRain() {
     shape: 'line'
   }
 
-  if (scene) {
-    scene.stop();
-    canvas.removeEventListener('click', canvasClickHandler);
-  }
-
   canvas.style.backgroundColor = 'black';
 
   let config = {
     particle: rainParticle,
-    emitter: skyBoxEmitter
-  }
-
-  scene = CreateParticleScene(canvas); 
-  scene.addSystem(CreateParticleSystem(config));
-  scene.start();
-}
-
-
-
-function activateSnow() {
-  const snowParticle = {
-    size: () => { return { w: random(1, 2) } },
-    speed: () =>  random(1, 4),
-    vector: 20,
-    color: 'white',
-    shape: 'circle',
-  }
-
-  if (scene) {
-    scene.stop();
-    canvas.removeEventListener('click', canvasClickHandler);
-  }
-
-  canvas.style.backgroundColor = 'black';
-
-  const config = {
-    particle: snowParticle,
     emitter: skyBoxEmitter,
     systemOptions: { startAtTick: 200 }
   }
 
-  const skyBoxEmitter2 = Object.assign({}, skyBoxEmitter);
-  skyBoxEmitter2.width = 0;
-  skyBoxEmitter2.height = 600;
-  skyBoxEmitter2.emitPerTick = 1;
-  skyBoxEmitter2.emissionFrequency = 50;
+  scene = CreateParticleScene(canvas); 
+  scene.addSystem(CreateParticleSystem(config));
+  scene.start();
+}
 
-  const config2 = {
+function activateSnow() {
+  cleanUpFromPreviousScene();
+
+  const skyBoxEmitterTop = {
+    x: 0,
+    y: 0,
+    width: 900,
+    height: 0,
+    emitPerTick: 1,
+  }
+
+  const skyBoxEmitterLeft = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 600,
+    emitPerTick: 1,
+    emissionFrequency: 50
+  }
+
+  const snowParticle = {
+    size: () => { return { w: random(1, 2) } },
+    speed: () =>  random(1, 4),
+    vector: () => random(18, 22),
+    color: 'white',
+    shape: 'circle',
+  }
+
+  canvas.style.backgroundColor = 'black';
+
+  const configTop = {
     particle: snowParticle,
-    emitter: skyBoxEmitter2,
+    emitter: skyBoxEmitterTop,
+    systemOptions: { startAtTick: 200 }
+  }
+
+  const configLeft = {
+    particle: snowParticle,
+    emitter: skyBoxEmitterLeft,
     systemOptions: { startAtTick: 100 }
   }
 
   scene = CreateParticleScene(canvas); 
-  scene.addSystem(CreateParticleSystem(config));
-  scene.addSystem(CreateParticleSystem(config2));
+  scene.addSystem(CreateParticleSystem(configTop));
+  scene.addSystem(CreateParticleSystem(configLeft));
   scene.start();
 }
 
-
-
-function activateCanvasClick() {
-  if (scene) {
-    scene.stop();
-    canvas.removeEventListener('click', canvasClickHandler);
-  }
+function activateBurst() {
+  cleanUpFromPreviousScene();
   
   canvas.style.backgroundColor = 'white';
 
@@ -224,6 +215,13 @@ function canvasClickHandler(event) {
   }
   
   scene.addSystem(CreateParticleSystem(burstConfig)); 
+}
+
+function cleanUpFromPreviousScene() {
+  if (scene) {
+    scene.stop();
+    canvas.removeEventListener('click', canvasClickHandler);
+  }
 }
 
 function random(min, max) {
