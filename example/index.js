@@ -1,6 +1,9 @@
 let canvas;
 let scene;
 
+/**
+ * Show or hide the play & pause button
+ */
 function toggleControls() {
   const el = document.getElementsByClassName('controls')[0];
   if (!el.classList.contains('controls--visible')) {
@@ -10,32 +13,49 @@ function toggleControls() {
   }
 }
 
+/**
+ * Switch the actively highlighted system menu bar
+ *
+ * @param {MouseEvent} event
+ */
 function toggleParticleSystem(event) {
   document.getElementsByClassName('particle-switcher__button--active')[0].classList.remove('particle-switcher__button--active');
   event.srcElement.classList.add('particle-switcher__button--active');
 
   const highlightElement = document.getElementsByClassName('particle-switcher__highlight')[0];
-  highlightElement.style = `transform: translateX(${event.srcElement.offsetLeft}px)`
+  highlightElement.style = `transform: translateX(${event.srcElement.offsetLeft}px)`;
 }
 
+/**
+ * Fired on body load, triggers the first simulation
+ */
 function onload() {
   canvas = document.getElementById('particles');
 
   activateRain();
 }
 
-function pause() {
-  if (scene) {
-    scene.stop();
-  }
-}
-
+/**
+ * If there is a current scene, start it
+ */
 function play() {
   if (scene) {
     scene.start();
   }
 }
 
+/**
+ * If there is a current scene, stop it
+ */
+function pause() {
+  if (scene) {
+    scene.stop();
+  }
+}
+
+/**
+ * Activate the insects simulation
+ */
 function activateInsects() {
   cleanUpFromPreviousScene();
 
@@ -81,6 +101,9 @@ function activateInsects() {
   scene.start();
 }
 
+/**
+ * Activate the rain simulation
+ */
 function activateRain() {
   cleanUpFromPreviousScene();
 
@@ -113,6 +136,9 @@ function activateRain() {
   scene.start();
 }
 
+/**
+ * Activate the snow simulation
+ */
 function activateSnow() {
   cleanUpFromPreviousScene();
 
@@ -161,6 +187,10 @@ function activateSnow() {
   scene.start();
 }
 
+/**
+ * Activate the on-click burst animation
+ *
+ */
 function activateBurst() {
   cleanUpFromPreviousScene();
   
@@ -173,6 +203,11 @@ function activateBurst() {
   canvas.addEventListener('click', canvasClickHandler);
 }
 
+/**
+ * Handle click events on the canvas pertaining to the burst animation
+ * 
+ * @param {MouseEvent} event
+ */
 function canvasClickHandler(event) {
 
   const burstConfig = {
@@ -214,9 +249,14 @@ function canvasClickHandler(event) {
     }
   }
   
-  scene.addSystem(CreateParticleSystem(burstConfig)); 
+  if (scene.running) {
+    scene.addSystem(CreateParticleSystem(burstConfig)); 
+  }
 }
 
+/**
+ * Stop the existing scene and remove any click-event handlers that may have been added if the ParticleBurst animation was started
+ */
 function cleanUpFromPreviousScene() {
   if (scene) {
     scene.stop();
@@ -224,6 +264,13 @@ function cleanUpFromPreviousScene() {
   }
 }
 
+/**
+ * A simple function for generating a number between min inclusive & max inclusive
+ *
+ * @param {number} min the inclusive lower bound
+ * @param {number} max the inclusive upper bound
+ * @returns
+ */
 function random(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }

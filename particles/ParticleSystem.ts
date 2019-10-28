@@ -1,182 +1,187 @@
 import { Emitter } from "./Emitter";
+import { Particle, Shape } from './Particle';
 
+/**
+ * An interface for passing additional options to the ParticleSystem
+ *
+ * @export
+ * @interface ParticleSysteOptions
+ */
 export interface ParticleSysteOptions {
+  /**
+   * Fast forward the particle system a number of ticks and begin animating from that point
+   *
+   * @type {number}
+   * @memberof ParticleSysteOptions
+   */
   startAtTick?: number;
 }
 
 /**
- * The ParticleSystem class defines the position of the emitter on the canvas as well as it's dimensions
+ * A class for maintaining a particle emitter and a list of active particles
  *
  * @export
- * @abstract
  * @class ParticleSystem
  */
 export class ParticleSystem {
+  /**
+   * True if the system has no living particles and will never emit another particle
+   *
+   * @type {boolean}
+   * @memberof ParticleSystem
+   */
   dead: boolean;
+
+  /**
+   * An object containing the width and height properties of the canvas being used by the system
+   *
+   * @type {{ w: number, h: number }}
+   * @memberof ParticleSystem
+   */
   canvasSize: { w: number, h: number };
+
+  /**
+   * The context used by the system to render particles
+   *
+   * @type {CanvasRenderingContext2D}
+   * @memberof ParticleSystem
+   */
   context: CanvasRenderingContext2D;
   
+  /**
+   * True if this system is currently running
+   *
+   * @type {boolean}
+   * @memberof ParticleSystem
+   */
   running: boolean;
+
+  /**
+   * List of living Particles in the current system
+   *
+   * @private
+   * @type {Particle[]}
+   * @memberof ParticleSystem
+   */
   private particles: Particle[] = [];
 
+  /**
+   * True if this system has been started at least once, used when determining if the system should skip to a particular ticks
+   *
+   * @private
+   * @type {boolean}
+   * @memberof ParticleSystem
+   */
   private hasStarted: boolean;
 
-  constructor(
-    private emitter: Emitter,
-    private options?: ParticleSysteOptions
-  ) { }
+  constructor(private emitter: Emitter, private options?: ParticleSysteOptions) { }
 
+  /**
+   * Start the ParticleSystem
+   *
+   * @memberof ParticleSystem
+   */
   start() {
+    // don't do anything if the system is already running
     if (!this.running) {
+      this.running = true;
 
+      // if we've passed in the option to skip ahead to a specific tick and the system has never been started before
       if (this.options && this.options.startAtTick && !this.hasStarted) {
-        this.running = true;
-  
+        
+        // process the specified number of ticks without animating
         for (let i = 0; i < this.options.startAtTick; i++) {
           this.tick();
         }
-  
-        this.running = false;
       }
-
-      this.running = true;
 
       this.hasStarted = true;
     }
   }
 
+  /**
+   * Stop the particle system in it's place without destroying it.
+   * The system can be restarted and it will continue from where it left off.
+   *
+   * @memberof ParticleSystem
+   */
   stop() {
-    this.running = false;
+    // do nothing if the system isn't running
+    if (this.running) {
+      // stop the system
+      this.running = false;
+    }
   }
 
+  /**
+   * Iterates the list of living particles, ticks them, and controls the particle rendering/removal process
+   *
+   * @memberof ParticleSystem
+   */
   tick(): void {
     if (this.running && !this.dead) {
 
+      // save the current context to re-render after iterating and rendering particles
       this.context.save();
 
+      // An array of new particles that were emitted. These won't render until next tick to avoid modifying the particles list while we're iterating it.
       const newParticles: Particle[] = this.emitter.emit(this.particles.length);
       const livingParticles: Particle[] = [];
 
       for (let i = 0, l = this.particles.length; i < l; i++) {
         const p = this.particles[i];
         
+        // For each particle, call its tick function. Any changes that should happen to the particle in this tick occur here
         p.tick();
 
         if (
           p.position.y >= this.canvasSize.h || p.position.y <= 0
           || p.position.x >= this.canvasSize.w || p.position.x <= 0
         ) {
+          // if this particle is now off-screen, it is dead and can be removed
           p.dead = true;
         }
 
         if (!p.dead) {
+          // if the particle is not dead, add it to the livingParticles list. We'll replace this.particles with this list later to
+          // remove dead particles without modifying the list we're iterating
           livingParticles.push(p);
 
+          // the particle is still on screen, render it
           this.context.beginPath();
-          this.drawParticle(p);
+
+          // render the appropriate shape for the particle
+          switch (p.shape) {
+            case Shape.CIRCLE:
+              this.context.arc(p.position.x, p.position.y, p.size.w, 0, 360);
+              break;
+            default:
+              this.context.rect(p.position.x, p.position.y, p.size.w, p.size.h);
+              break;
+          }
+      
+          this.context.fillStyle = p.color;
+          this.context.fill();
+
           this.context.closePath();
         }
       }
 
       if (newParticles) {
+        // the new particles we've emitted this tick will be rendered next tick, so 
         livingParticles.push(...newParticles);
       }
 
+      // swap this.particles with the content of livingParticles to remove any dead particles
       this.particles = livingParticles;
 
+      // restore the context we saved earlier so that any previous particles/systems/scenes are rendered correctly
       this.context.restore();
       
       if (!this.particles.length && this.emitter.dead) {
+        // if the emitter is dead and there are no living particles, this system is dead
         this.dead = true;
       }
     }
   };
-
-  private drawParticle(particle: Particle) {
-    particle.generateCanvasElement(this.context);
-  }
-}
-
-/**
- * The Particle class defines the properties of a particle, IE speed, direction
- *
- * @export
- * @abstract
- * @class Particle
- */
-export class Particle {
-  dead: boolean;
-
-  size: { w: number, h: number };
-  vector: number;
-  speed: number;
-  color: string;
-  shape: string;
-  timeToLive: number;
-
-  tickCount: number;
-
-  // if an animation function is passed in, this is used to store state for it. Can be anything
-  animationState: any;
-
-  spawnTime: number;
-
-  constructor(public position: { x: number, y: number }, private config: ParticleConfig) {
-    this.size = typeof this.config.size  === 'function' ? this.config.size() : this.config.size;
-    this.vector = typeof this.config.vector  === 'function' ? this.config.vector() : this.config.vector;
-    this.speed = typeof this.config.speed  === 'function' ? this.config.speed() : this.config.speed;
-    this.color = typeof this.config.color  === 'function' ? this.config.color() : this.config.color;
-    this.shape = typeof this.config.shape  === 'function' ? this.config.shape() : this.config.shape;
-    this.timeToLive = typeof this.config.timeToLive  === 'function' ? this.config.timeToLive() : this.config.timeToLive;
-
-    this.spawnTime = Date.now();
-  }
-
-  tick(): void {
-    if (this.config.animation) {
-      this.config.animation(this)
-    } else {
-      this.calculateLinearMove();
-    }
-
-    this.tickCount++;
-
-    if (this.timeToLive && Date.now() - this.spawnTime > this.timeToLive) {
-      this.dead = true;
-    }
-  };
-
-  generateCanvasElement(ctx: CanvasRenderingContext2D): void {
-    switch (this.shape) {
-      case Shape.CIRCLE:
-        ctx.arc(this.position.x, this.position.y, this.size.w, 0, 360);
-        break;
-      default:
-        ctx.rect(this.position.x, this.position.y, this.size.w, this.size.h);
-        break;
-    }
-
-    ctx.fillStyle = this.color;
-    ctx.fill();
-  };
-
-  calculateLinearMove() {
-    this.position.x += Math.sin(this.vector * (Math.PI / 180)) * this.speed;
-    this.position.y += Math.cos(this.vector * (Math.PI / 180)) * this.speed;
-  }
-}
-
-export enum Shape {
-  CIRCLE = 'circle',
-  RECTANGLE = 'rectangle'
-}
-
-export interface ParticleConfig {
-  size: { w: number, h: number } | (() => { w: number, h: number });
-  speed: number | (() => number);
-  vector: number | (() => number);
-  color: string | (() => string);
-  shape: Shape | (() => Shape);
-  animation?: (x: Particle) => void;
-  timeToLive?: number | (() => number);
 }

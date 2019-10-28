@@ -1,10 +1,37 @@
 import { Emitter, EmitterConfig } from "./Emitter";
-import { ParticleSystem, ParticleConfig, Shape, ParticleSysteOptions } from "./ParticleSystem";
+import { ParticleSystem, ParticleSysteOptions } from "./ParticleSystem";
+import {  ParticleConfig, Shape } from './Particle';
 import { ParticleScene } from './Scene';
 
+/**
+ * An interface that contains the configuration for a Particle, an Emitter, and any additional options for a ParticleSystem
+ *
+ * @export
+ * @interface ParticleSystemConfig
+ */
 export interface ParticleSystemConfig {
+  /**
+   * The configuration for the type of Particle a system will emit
+   *
+   * @type {ParticleConfig}
+   * @memberof ParticleSystemConfig
+   */
   particle: ParticleConfig;
+
+  /**
+   * The configuration for a System's Emitter
+   *
+   * @type {EmitterConfig}
+   * @memberof ParticleSystemConfig
+   */
   emitter: EmitterConfig;
+
+  /**
+   * Any additional system-specific configuration
+   *
+   * @type {ParticleSysteOptions}
+   * @memberof ParticleSystemConfig
+   */
   systemOptions?: ParticleSysteOptions;
 }
 
@@ -28,22 +55,42 @@ const defaultParticlesConfig: ParticleSystemConfig = {
   }
 }
 
-export const CreateParticleScene = (canvas: HTMLCanvasElement, ...systems: ParticleSystem[]): ParticleScene => {
+/**
+ * Creates a new ParticleScene with the provided canvas
+ *
+ * @param {HTMLCanvasElement} canvas the canvas for which the ParticleScene to direct
+ * @param {...ParticleSystem[]} systems an optional array of ParticleSystems with which to initialize the ParticleScene
+ * @returns {ParticleScene}
+ */
+export function CreateParticleScene(canvas: HTMLCanvasElement, ...systems: ParticleSystem[]): ParticleScene {
   return new ParticleScene(canvas, systems);
 }
 
-export const CreateParticleSystem = (config: ParticleSystemConfig = defaultParticlesConfig) => {
-
+/**
+ * Creates a new ParticleSystem from the provided ParticleSystemConfig
+ *
+ * @export
+ * @param {ParticleSystemConfig} [config=defaultParticlesConfig]
+ * @returns
+ */
+export function CreateParticleSystem (config: ParticleSystemConfig = defaultParticlesConfig) {
   const emitter = new Emitter(config.particle, config.emitter);
   const system = new ParticleSystem(emitter, config.systemOptions);
 
   return system;
 }
 
-// Add the two above exports to the Window object to be accessed without Typescript
+// Add the two above exports to the Window object to be accessed in browser or outside a Node.js environment
 window['CreateParticleSystem'] = CreateParticleSystem;
 window['CreateParticleScene'] = CreateParticleScene;
 
+/**
+ * A simple function for generating a number between min inclusive & max inclusive
+ *
+ * @param {number} min the inclusive lower bound
+ * @param {number} max the inclusive upper bound
+ * @returns
+ */
 function random(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
