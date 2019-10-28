@@ -52,10 +52,45 @@ function activateDefault() {
     canvas.removeEventListener('click', canvasClickHandler);
   }
 
+  const config = {
+    emitter: {
+      x: 200,
+      y: 200,
+      width: 200,
+      height: 200,
+      emitPerTick: 1,
+      numberOfEmissions: 100,
+    },
+    particle: {
+      size: () => ({ w: random(2, 3), h: random(2, 3) }),
+      speed: () => random(6, 10),
+      shape: 'circle',
+      color: 'black',
+      vector: () => random(0, 360),
+      animation: (p) => {
+        if (!p.animationState) {
+          p.animationState = { tickCount: 0, direction: [-1, 1][random(0, 1)] };
+        }
+
+        if (p.animationState.tickCount >= 35) {
+          p.animationState.direction *= -1;
+          p.animationState.tickCount = 5;
+        } else if (p.animationState.tickCount >= 5) {
+          p.vector += (12 * p.animationState.direction);
+        }
+
+        p.animationState.tickCount++;
+
+        p.calculateLinearMove();
+      }
+    },
+    systemOptions: { startAtTick: 100 }
+  }
+
   canvas.style.backgroundColor = 'white';
 
   scene = CreateParticleScene(canvas); 
-  scene.addSystem(CreateParticleSystem());
+  scene.addSystem(CreateParticleSystem(config));
   scene.start();
 }
 
