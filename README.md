@@ -1,10 +1,11 @@
 # In-Browser Particle System
-A modular, extendable particle system built with :heart: using Typescript.
 
 ## Running the Example Project
 Running the application requires [Node.js](https://nodejs.org). After cloning the repository, simply run `npm install` and then run `npm start`.
 
 If you're planning to make changes to the code base, the system comes with nodemon already installed. Instead of running `npm start`, run `npm run serve`. This will build the application and host it at `localhost:8080` every time a file is changed.
+
+**Note: When selecting the Particle Burst animation, click anywhere on the canvas to see the simulation.**
 
 
 ## Using the library
@@ -89,11 +90,11 @@ Each `ParticleSystem` is entirely self-contained. Alongside its `Emitter` and `P
 | emitPerTick | An optional number (or function that returns a number) that dictates how many particles are emitted in a single tick. | 
 
 # Creating a Custom Particle System
-Using the above configuration,  it's easy to create your own Particle System. 
+Using the above configuration, it's easy to create your own Particle System. 
 
 ```javascript
 // create the emitter config
-const  skyBoxEmitter = {
+const skyBoxEmitter = {
 	x: 0,
 	y: 0,
 	width: 900,
@@ -112,7 +113,7 @@ const rainParticle = {
 
 // pass the particle and emitter configs into a new config object
 // instruct the system to fast-forward 200 ticks before rendering
-let config  =  {
+let config = {
 	particle:rainParticle,
 	emitter: skyBoxEmitter,
 	systemOptions: { startAtTick: 200 }
@@ -127,12 +128,12 @@ See what this code makes [here](https://imgur.com/a/Yu5dvZm).
 
 
 # Building Custom Animations
-Let's face it: straight lines are boring. But fear not, you can program your own custom animations for your particles. We can pass a function in the `animation` property of the ParticleConfig and define our own animations through code.  We'll leverage the `animationState` property of the Particle class to manage state between ticks in the animation.
+Let's face it: straight lines are boring. But fear not, you can program your own custom animations for your particles. We can pass a function in the `animation` property of the ParticleConfig and define our own animations through code. When this property is given to the particle configuration, the system will automatically use it instead of its own `calculateLinearMove` function. We'll leverage the `animationState` property of the Particle class to manage state between ticks in the animation.
 
 *For the purposes of the below code, `random` is a function that takes an inclusive lower-bound and an inclusive upper-bound and returns a random number between them.*
 
 ```javascript
-const  burstConfig = {
+const burstConfig = {
 	emitter: {
 		x: 200,
 		y: 200,
@@ -144,21 +145,21 @@ const  burstConfig = {
 	particle: {
 		size: () => ({ w: random(2, 5) }),
 		speed: () => random(5, 10),
-		vector: () => random(0,  360),
+		vector: () => random(0, 360),
 		color: () => `rgba(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)}, 1)`,
 		shape: 'circle',
 		animation: (p) => {
 			
 			// if we haven't yet set the `animationState` property of this particle, do so now with the appropriate config
 			if (!p.animationState) {
-				let  [r, g, b, a] = p.color.match(/[0-9]*/g).map(x => parseInt(x)).filter(x  => !Number.isNaN(x));
+				let [r, g, b, a] = p.color.match(/[0-9]*/g).map(x => parseInt(x)).filter(x => !Number.isNaN(x));
 				
 				// save the color information we just parsed for future ticks
 				p.animationState = { r, g, b, a };
 				
 				// get a random number that is either -1 or 1 to use as a direction for rotation
 				p.animationState.direction = [-1, 1][random(0, 1)];
-			}  else  {
+			} else {
 				// fade the particle out with each tick
 				p.animationState.a -= 0.02;
 				p.color = `rgba(${p.animationState.r}, ${p.animationState.g}, ${p.animationState.b}, ${p.animationState.a})`
@@ -169,7 +170,7 @@ const  burstConfig = {
 
 			if (p.animationState.a <= 0) {
 				// if the particle is completely transparent, remove it
-				p.dead  =  true;
+				p.dead = true;
 			}
 			
 			// now that we've processed the particle, we can call the calculateLinearMove function
