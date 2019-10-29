@@ -1,5 +1,5 @@
 import { Emitter, EmitterConfig } from "./Emitter";
-import { ParticleSystem, ParticleSysteOptions } from "./ParticleSystem";
+import { ParticleSystem, ParticleSystemOptions } from "./ParticleSystem";
 import {  ParticleConfig, Shape } from './Particle';
 import { ParticleScene } from './Scene';
 
@@ -29,10 +29,10 @@ export interface ParticleSystemConfig {
   /**
    * Any additional system-specific configuration
    *
-   * @type {ParticleSysteOptions}
+   * @type {ParticleSystemOptions}
    * @memberof ParticleSystemConfig
    */
-  systemOptions?: ParticleSysteOptions;
+  systemOptions?: ParticleSystemOptions;
 }
 
 const defaultParticlesConfig: ParticleSystemConfig = {

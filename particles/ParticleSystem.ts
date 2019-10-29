@@ -5,14 +5,14 @@ import { Particle, Shape } from './Particle';
  * An interface for passing additional options to the ParticleSystem
  *
  * @export
- * @interface ParticleSysteOptions
+ * @interface ParticleSystemOptions
  */
-export interface ParticleSysteOptions {
+export interface ParticleSystemOptions {
   /**
    * Fast forward the particle system a number of ticks and begin animating from that point
    *
    * @type {number}
-   * @memberof ParticleSysteOptions
+   * @memberof ParticleSystemOptions
    */
   startAtTick?: number;
 }
@@ -74,7 +74,7 @@ export class ParticleSystem {
    */
   private hasStarted: boolean;
 
-  constructor(private emitter: Emitter, private options?: ParticleSysteOptions) { }
+  constructor(private emitter: Emitter, private options?: ParticleSystemOptions) { }
 
   /**
    * Start the ParticleSystem

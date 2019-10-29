@@ -211,7 +211,7 @@ function activateBurst() {
 function canvasClickHandler(event) {
 
   const burstConfig = {
-    emitter: {  
+    emitter: {
       x: event.pageX - event.currentTarget.getBoundingClientRect().left,
       y: event.pageY - event.currentTarget.getBoundingClientRect().top,
       width: 0,
@@ -230,14 +230,12 @@ function canvasClickHandler(event) {
           let [r, g, b, a] = p.color.match(/[0-9]*/g).map(x => parseInt(x)).filter(x => !Number.isNaN(x));
 
           p.animationState = { r, g, b, a };
-          p.animationState.vector = p.vector;
           p.animationState.direction = [-1, 1][random(0, 1)];
         } else {
           p.animationState.a -= 0.02;
-          p.animationState.vector = p.animationState.vector + (5 * p.animationState.direction);
 
           p.color = `rgba(${p.animationState.r}, ${p.animationState.g}, ${p.animationState.b}, ${p.animationState.a})`
-          p.vector = p.animationState.vector;
+          p.vector += (5 * p.animationState.direction);
         }
 
         if (p.animationState.a <= 0) {
