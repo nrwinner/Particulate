@@ -128,7 +128,7 @@ See what this code makes [here](https://imgur.com/a/Yu5dvZm).
 
 
 # Building Custom Animations
-Let's face it: straight lines are boring. But fear not, you can program your own custom animations for your particles. We can pass a function in the `animation` property of the ParticleConfig and define our own animations through code.  We'll leverage the `animationState` property of the Particle class to manage state between ticks in the animation.
+Let's face it: straight lines are boring. But fear not, you can program your own custom animations for your particles. We can pass a function in the `animation` property of the ParticleConfig and define our own animations through code. When this property is given to the particle configuration, the system will automatically use it instead of its own `calculateLinearMove` function. We'll leverage the `animationState` property of the Particle class to manage state between ticks in the animation.
 
 *For the purposes of the below code, `random` is a function that takes an inclusive lower-bound and an inclusive upper-bound and returns a random number between them.*
 
