@@ -14,7 +14,7 @@ If you're planning to make changes to the code base, the system comes with nodem
 To use this particle system in your own projects, first build the project using `npm run build`. In the `<head>` of your HTML, import the `bundle.js` file from the `particles/dist` folder.
 
 ```html
-	<script src="bundle.js" type="text/javascript" />
+<script src="bundle.js" type="text/javascript"></script>
 ```
 
 ### Emitting your first particles
