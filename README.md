@@ -11,17 +11,10 @@ If you're planning to make changes to the code base, the system comes with nodem
 ## Using the library
 
 ### In the browser
-Using this particle system is easy. In the `<head>` of your HTML, import the `bundle.js` file from the dist folder.
+To use this particle system in your own projects, first build the project using `npm run build`. In the `<head>` of your HTML, import the `bundle.js` file from the `particles/dist` folder.
 
 ```html
-	<script src="particles/dist/bundle.js" type="text/javascript" />
-```
-
-### In a TypeScript or Node.js Project
-If you're in a Typescript or Node.js project, you can utilize the TypeScript or non-bundled JavaScript files and import directly from the index script.
-
-```javascript
-	import { CreateParticleScene, CreateParticleSystem } from './particles/index'
+	<script src="bundle.js" type="text/javascript" />
 ```
 
 ### Emitting your first particles
