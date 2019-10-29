@@ -1,5 +1,4 @@
 # In-Browser Particle System
-A modular, extendable particle system built with :heart: using Typescript.
 
 ## Running the Example Project
 Running the application requires [Node.js](https://nodejs.org). After cloning the repository, simply run `npm install` and then run `npm start`.
