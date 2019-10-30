@@ -5,6 +5,8 @@ Running the application requires [Node.js](https://nodejs.org). After cloning th
 
 If you're planning to make changes to the code base, the system comes with nodemon already installed. Instead of running `npm start`, run `npm run serve`. This will build the application and host it at `localhost:8080` every time a file is changed.
 
+A simple demo of the system can be found [here](http://web.winnerdigital.net/asymmetrik/).
+
 **Note: When selecting the Particle Burst animation, click anywhere on the canvas to see the simulation.**
 
 
