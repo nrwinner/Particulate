@@ -23,13 +23,13 @@ To use this particle system in your own projects, first build the project using 
 This script exposes several functions. Full API documentation is below, but here is a quick guide for getting started.
 
 ```javascript
-const canvas = document.getElementByTagName('canvas')[0];
+const canvas = document.getElementsByTagName('canvas')[0];
 const particleScene = CreateParticleScene(canvas);
 
 const system = CreateParticleSystem();
-scene.addSystem(system);
+particleScene.addSystem(system);
 
-scene.start();
+particleScene.start();
 ```
 
 This code will create a ParticleSystem and ParticleScene, add the system to the scene, and start the scene. By default, the ParticleSystem creates an emitter in the upper-left corner of the canvas and emits in pulses a number of colored particles towards the lower-right corner of the canvas. Each system can be configured to do almost anything. More information on this configuration is in the API Documentation section.
@@ -41,7 +41,7 @@ The particle system is made up of 4 basic types: The ParticleScene, the Particle
 The `Particle` is the smallest part of the system. It is responsible for maintaining its own shape, size, color, vector, etc. 
 
 ### Emitter
-The Emitter` is the next step up the ladder. An emitter is responsible for determining if particles can be generated and then attempting to create them.
+The `Emitter` is the next step up the ladder. An emitter is responsible for determining if particles can be generated and then attempting to create them.
 
 ### ParticleSystem
 The `ParticleSystem` is what connects an `Emitter` with a type of `Particle`. The `ParticleSystem` is responsible for adding, removing, and maintaining a list of `Particles`.
